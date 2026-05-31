@@ -1,22 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace KeySharp;
 
 /// <summary>Represents a stored credential entry (without the password value).</summary>
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+[DebuggerTypeProxy(typeof(PasswordEntryDebugView))]
 public class PasswordEntry(string service, string user)
 {
     /// <summary>
     /// The service name of the credential entry.
     /// </summary>
     public string Service { get; } = service;
-    
+
     /// <summary>
     /// The user name of the credential entry.
     /// </summary>
     public string User { get; } = user;
+
+    private string DebuggerDisplay => string.IsNullOrEmpty(User) ? Service : $"{Service} ({User})";
+}
+
+internal sealed class PasswordEntryDebugView(PasswordEntry entry)
+{
+    public string Service => entry.Service;
+
+    public string User => entry.User;
+
+    public string Label => string.IsNullOrEmpty(entry.User) ? entry.Service : $"{entry.Service} ({entry.User})";
 }
 
 /// <summary>
@@ -169,7 +183,10 @@ public static unsafe class Keyring
             var nativeLabelOffset = Util.GetUtf8(text, native, byteCount);
             native[nativeLabelOffset] = 0;
         }
-        else { native = null; }
+        else
+        {
+            native = null;
+        }
 
         return native;
     }

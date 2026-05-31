@@ -4,8 +4,8 @@
         <TargetFramework>net10.0</TargetFramework>
 
         <PackageId>Sanjay.KeySharp</PackageId>
-        <PackageVersion>1.0.9</PackageVersion>
-        <FileVersion>1.0.9</FileVersion>
+        <PackageVersion>1.0.10</PackageVersion>
+        <FileVersion>1.0.10</FileVersion>
 
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
