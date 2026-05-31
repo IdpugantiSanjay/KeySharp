@@ -1,0 +1,25 @@
+[tasks.native-rebuild]
+description = "Update keychain submodule and rebuild the native shared library"
+run = """
+(cd native/lib/keychain && git fetch origin master && git reset --hard origin/master)
+mkdir -p native/build
+(cd native/build && cmake .. && make)
+"""
+
+[tasks.build]
+run = "dotnet build KeySharp/KeySharp.csproj -c Release"
+
+
+[tasks.pack]
+description = "Build and pack the NuGet package"
+run = "dotnet pack KeySharp/KeySharp.csproj -c Release --no-build"
+depends = ["build"]
+
+[tasks.publish]
+description = "Push the NuGet package to nuget.org (requires NUGET_API_KEY env var)"
+run = """
+dotnet nuget push KeySharp/bin/Release/Sanjay.KeySharp.*.nupkg \
+  --api-key $NUGET_API_KEY \
+  --source https://api.nuget.org/v3/index.json
+"""
+depends = ["pack"]

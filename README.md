@@ -1,4 +1,4 @@
-# KeySharp [![Nuget](https://img.shields.io/nuget/v/KeySharp)](https://www.nuget.org/packages/KeySharp/)
+# KeySharp [![Nuget](https://img.shields.io/nuget/v/Sanjay.KeySharp)](https://www.nuget.org/packages/Sanjay.KeySharp/)
 
 Cross-platform OS keyring access for C#/.NET based on [keychain by hrantzsch](https://github.com/hrantzsch/keychain).
 All calls are potentially blocking, as the OS may ask the user to grant access or unlock the keychain.

@@ -3,21 +3,21 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
 
-        <PackageId>KeySharp</PackageId>
-        <PackageVersion>1.0.5</PackageVersion>
-        <FileVersion>1.0.5</FileVersion>
+        <PackageId>Sanjay.KeySharp</PackageId>
+        <PackageVersion>1.0.6</PackageVersion>
+        <FileVersion>1.0.6</FileVersion>
 
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
         <Description>Cross-platform keychain</Description>
 
-        <Authors>goaaats</Authors>
+        <Authors>Sanjay Idpuganti</Authors>
         <LangVersion>latest</LangVersion>
 
-        <PackageProjectUrl>https://github.com/goaaats/KeySharp</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/IdpugantiSanjay/KeySharp</PackageProjectUrl>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <RepositoryUrl>https://github.com/goaaats/KeySharp</RepositoryUrl>
+        <RepositoryUrl>https://github.com/IdpugantiSanjay/KeySharp</RepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
