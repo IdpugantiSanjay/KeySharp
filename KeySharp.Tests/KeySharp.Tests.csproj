@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KeySharp\KeySharp.csproj" />
+  </ItemGroup>
+
+  <!-- Copy native libraries to the output directory so P/Invoke can resolve them -->
+  <ItemGroup>
+    <None Include="..\KeySharp\runtimes\**\*" CopyToOutputDirectory="PreserveNewest" LinkBase="runtimes" />
+  </ItemGroup>
+
+  <Target Name="CopyNativeLibToOutput" AfterTargets="Build">
+    <PropertyGroup>
+      <_NativeRid Condition="$([MSBuild]::IsOSPlatform('Linux'))">linux-x64</_NativeRid>
+      <_NativeRid Condition="$([MSBuild]::IsOSPlatform('OSX')) And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64'">osx-arm64</_NativeRid>
+      <_NativeRid Condition="$([MSBuild]::IsOSPlatform('OSX')) And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' != 'Arm64'">osx-x64</_NativeRid>
+      <_NativeRid Condition="$([MSBuild]::IsOSPlatform('Windows'))">win-x64</_NativeRid>
+    </PropertyGroup>
+    <ItemGroup>
+      <_NativeLib Include="$(OutputPath)runtimes\$(_NativeRid)\native\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_NativeLib)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

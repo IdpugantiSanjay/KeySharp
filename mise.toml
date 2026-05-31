@@ -1,19 +1,25 @@
 [tasks.native-rebuild]
-description = "Update keychain submodule and rebuild the native shared library"
+description = "Update keychain submodule, rebuild the native shared library, and copy it into runtimes/"
 run = """
 (cd native/lib/keychain && git fetch origin master && git reset --hard origin/master)
 mkdir -p native/build
 (cd native/build && cmake .. && make)
+cp native/build/libskeychain.so KeySharp/runtimes/linux-x64/native/libskeychain.so
 """
 
 [tasks.build]
+depends = ["native-rebuild"]
 run = "dotnet build KeySharp/KeySharp.csproj -c Release"
 
+
+[tasks.cleanup]
+description = "Remove stale NuGet packages from the Release output folder"
+run = "rm -f KeySharp/bin/Release/Sanjay.KeySharp.*.nupkg"
 
 [tasks.pack]
 description = "Build and pack the NuGet package"
 run = "dotnet pack KeySharp/KeySharp.csproj -c Release --no-build"
-depends = ["build"]
+depends = ["build", "cleanup"]
 
 [tasks.publish]
 description = "Push the NuGet package to nuget.org (requires NUGET_API_KEY env var)"
