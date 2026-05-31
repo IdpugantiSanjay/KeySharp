@@ -5,6 +5,9 @@ using System.Text;
 
 namespace KeySharp;
 
+/// <summary>Represents a stored credential entry (without the password value).</summary>
+public record PasswordEntry(string Service, string User);
+
 /// <summary>
 /// Class used to interface with the OS keyring.
 /// </summary>
@@ -86,6 +89,38 @@ public static unsafe class Keyring
         Util.Free(nativePackage);
         Util.Free(nativeService);
         Util.Free(nativeUsername);
+    }
+
+    /// <summary>
+    /// List all stored credential entries (service and user) for a given package.
+    /// Password values are not included.
+    /// </summary>
+    /// <param name="package">The package ID.</param>
+    /// <returns>A list of <see cref="PasswordEntry"/> with Service and User populated.</returns>
+    public static List<PasswordEntry> ListPasswords(string package)
+    {
+        var nativePackage = AllocateNullTerminated(package);
+
+        var ret = Glue.ListPasswords(nativePackage);
+
+        Util.Free(nativePackage);
+
+        if (ret == null)
+        {
+            ThrowLastError();
+        }
+
+        var raw = ReadString(ret);
+        var entries = new List<PasswordEntry>();
+
+        foreach (var line in raw.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var parts = line.Split('\t');
+            if (parts.Length == 2)
+                entries.Add(new PasswordEntry(parts[0], parts[1]));
+        }
+
+        return entries;
     }
 
     private static string ReadString(byte* data)

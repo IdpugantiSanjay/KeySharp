@@ -77,4 +77,32 @@ EXPORTED keychain::ErrorType getLastError()
 
 	return lastError->type;
 }
+
+// Returns tab/newline-delimited entries: "service\tuser\n..." or nullptr on error.
+// Each line is one entry: service TAB user.
+EXPORTED const char* listPasswords(const char* package)
+{
+	keychain::Error* error = new keychain::Error();
+	auto entries = keychain::listPasswords(package, *error);
+
+	if (error->type != keychain::ErrorType::NoError)
+	{
+		lastError = error;
+		return nullptr;
+	}
+
+	delete error;
+
+	std::string result;
+	for (const auto& entry : entries)
+	{
+		result += entry.service + "\t" + entry.user + "\n";
+	}
+
+	char* writable = new char[result.size() + 1];
+	std::copy(result.begin(), result.end(), writable);
+	writable[result.size()] = '\0';
+
+	return writable;
+}
 }

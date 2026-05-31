@@ -19,4 +19,7 @@ internal static unsafe class Glue
 
     [DllImport("skeychain", EntryPoint = "getLastError")]
     public static extern ErrorType GetLastError();
+
+    [DllImport("skeychain", EntryPoint = "listPasswords")]
+    public static extern byte* ListPasswords(byte* package);
 }
