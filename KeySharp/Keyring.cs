@@ -6,7 +6,18 @@ using System.Text;
 namespace KeySharp;
 
 /// <summary>Represents a stored credential entry (without the password value).</summary>
-public record PasswordEntry(string Service, string User);
+public class PasswordEntry(string service, string user)
+{
+    /// <summary>
+    /// The service name of the credential entry.
+    /// </summary>
+    public string Service { get; } = service;
+    
+    /// <summary>
+    /// The user name of the credential entry.
+    /// </summary>
+    public string User { get; } = user;
+}
 
 /// <summary>
 /// Class used to interface with the OS keyring.
