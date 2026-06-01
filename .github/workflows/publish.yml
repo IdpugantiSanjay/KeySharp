@@ -17,9 +17,13 @@ jobs:
         with:
           dotnet-version: '10.x'
 
+      - name: Build
+        working-directory: KeySharp
+        run: dotnet build -c Release
+
       - name: Pack
         working-directory: KeySharp
-        run: dotnet pack -c Release -o out
+        run: dotnet pack -c Release --no-build -o out
 
       - name: Push to NuGet
         working-directory: KeySharp
