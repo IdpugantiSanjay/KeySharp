@@ -38,13 +38,17 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
+      - name: Stage library
+        shell: bash
+        run: |
+          mkdir -p out
+          find build -name "${{ matrix.lib-name }}" -exec cp {} out/${{ matrix.lib-name }} \;
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.runtime }}
-          path: |
-            build/${{ matrix.lib-name }}
-            build/Release/${{ matrix.lib-name }}
+          path: out/${{ matrix.lib-name }}
 
   commit:
     needs: build
