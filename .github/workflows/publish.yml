@@ -1,0 +1,25 @@
+name: Publish NuGet
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'KeySharp/KeySharp.csproj'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Pack
+        working-directory: KeySharp
+        run: dotnet pack -c Release -o out
+
+      - name: Push to NuGet
+        working-directory: KeySharp
+        run: dotnet nuget push out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
