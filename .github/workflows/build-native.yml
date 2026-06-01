@@ -1,0 +1,76 @@
+name: Build Native Libraries
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - 'native/**'
+      - '.gitmodules'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            lib-name: libskeychain.so
+            runtime: linux-x64
+            cmake-args: ''
+          - os: windows-latest
+            lib-name: skeychain.dll
+            runtime: win-x64
+            cmake-args: ''
+          - os: macos-latest
+            lib-name: libskeychain.dylib
+            runtime: osx-arm64
+            cmake-args: ''
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install -y libsecret-1-dev libglib2.0-dev
+
+      - name: Configure
+        run: cmake -B build -S native -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake-args }}
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.runtime }}
+          path: |
+            build/${{ matrix.lib-name }}
+            build/Release/${{ matrix.lib-name }}
+
+  commit:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Copy native libs into runtimes
+        run: |
+          cp artifacts/linux-x64/libskeychain.so   KeySharp/runtimes/linux-x64/native/libskeychain.so
+          cp artifacts/win-x64/skeychain.dll        KeySharp/runtimes/win-x64/native/skeychain.dll
+          cp artifacts/osx-arm64/libskeychain.dylib KeySharp/runtimes/osx-arm64/native/libskeychain.dylib
+
+      - name: Commit updated native libraries
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add KeySharp/runtimes/
+          git diff --staged --quiet || git commit -m "chore: rebuild native libraries"
+          git push
