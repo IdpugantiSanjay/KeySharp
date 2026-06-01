@@ -16,15 +16,12 @@ jobs:
           - os: ubuntu-latest
             lib-name: libskeychain.so
             runtime: linux-x64
-            cmake-args: ''
           - os: windows-latest
             lib-name: skeychain.dll
             runtime: win-x64
-            cmake-args: ''
           - os: macos-latest
             lib-name: libskeychain.dylib
             runtime: osx-arm64
-            cmake-args: ''
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +33,7 @@ jobs:
         run: sudo apt-get install -y libsecret-1-dev libglib2.0-dev
 
       - name: Configure
-        run: cmake -B build -S native -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake-args }}
+        run: cmake -B build -S native -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
       - name: Build
         run: cmake --build build --config Release
