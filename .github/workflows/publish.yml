@@ -26,5 +26,12 @@ jobs:
         run: dotnet pack -c Release --no-build -o out
 
       - name: Push to NuGet
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         working-directory: KeySharp
-        run: dotnet nuget push out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "ERROR: NUGET_API_KEY secret is not set or is empty"
+            exit 1
+          fi
+          dotnet nuget push out/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
